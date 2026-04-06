@@ -1,4 +1,4 @@
-<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/71d57105-72a2-4d96-9fd8-cba7e2dfb439" />게임 제목: 미정
+게임 제목: 미정
 
  1. 게임 컨셉
 플레이어가 화면에 터치로 궤적을 그리면, 아군 발사체가 그 곡선을 따라 날아가며 몰려오는 적들을 요격하는 2D 디펜스 슈팅 게임입니다.
@@ -17,7 +17,6 @@ CustomView & 그래픽 요소
 PathView를 응용한 궤적 그리기 시스템
 프레임 애니메이션(Sprite 사용)을 적용한 플레이어 및 적 기체 구현
 배경 레이어링을 통한 시차 스크롤 배경 적용
-<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/b9102be3-7ee4-4d9f-b87d-b8f6294147ef" />
 
 게임 로직
 EnemyGenerator를 활용한 웨이브 기반 적군 스폰
@@ -32,6 +31,7 @@ Fisher-Yates 알고리즘을 응용하여 특정 이벤트 발생 시 적 위치
 플레이어가 화면 빈 공간에 손가락으로 S자 등 다양한 곡선을 그림.
 그려진 Path를 따라 아군 발사체가 날아가 적과 충돌 시 폭발.
 게임 오버 화면: 적이 아군 베이스에 닿으면 게임 오버. Toast나 AlertDialog로 최종 점수 출력 후 재시작 여부 선택.
+<img width="1408" height="768" alt="Gemini_Generated_Image_59gobh59gobh59go" src="https://github.com/user-attachments/assets/4ec371ce-6a18-4a8a-89e6-18b6de4681f0" />
 
  4. 개발 일정
 시작일: 2026년 4월 6일
