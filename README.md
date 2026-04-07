@@ -32,6 +32,7 @@ Fisher-Yates 알고리즘을 응용하여 특정 구간 진입 시 아이템 배
 비행사가 생성된 레일을 타고 곡선 질주하며 장애물을 피하고 잉크를 수집. 길을 끊기거나 장애물에 부딪히면 추락.
 게임 오버 화면: 추락 또는 충돌 시 종료. Toast/AlertDialog로 최종 이동 거리 출력 및 재시작/종료 여부 선택.
 
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/768f3b4c-bbd2-45f7-bcb4-145d0a7547af" />
 
  4. 개발 일정 (총 8주)
 시작일: 2026년 4월 6일 기준
