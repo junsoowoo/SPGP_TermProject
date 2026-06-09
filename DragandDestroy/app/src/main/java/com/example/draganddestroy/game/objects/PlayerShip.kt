@@ -2,9 +2,10 @@ package com.example.draganddestroy.game.objects
 
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
+import com.example.draganddestroy.R
 import com.example.draganddestroy.game.data.GameStats
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.sqrt
 
@@ -35,19 +36,11 @@ class PlayerShip(
 
     private var fireTimer = 0f
 
-    private val bodyPaint = Paint().apply {
-        color = Color.CYAN
-        isAntiAlias = true
-    }
+    private val sprite = Sprite(gctx, R.drawable.player_ship)
 
-    private val wingPaint = Paint().apply {
-        color = Color.WHITE
-        isAntiAlias = true
-    }
-
-    private val gunPaint = Paint().apply {
-        color = Color.YELLOW
-        isAntiAlias = true
+    init {
+        sprite.setSize(130f, 100f)
+        sprite.setCenter(x, y)
     }
 
     override fun update(gctx: GameContext) {
@@ -63,9 +56,8 @@ class PlayerShip(
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.drawCircle(x, y, 42f, bodyPaint)
-        canvas.drawRect(x - 55f, y - 15f, x + 35f, y + 15f, wingPaint)
-        canvas.drawRect(x + 30f, y - 8f, x + 75f, y + 8f, gunPaint)
+        sprite.setCenter(x, y)
+        sprite.draw(canvas)
     }
 
     fun setMoveInput(dirX: Float, dirY: Float, power: Float) {

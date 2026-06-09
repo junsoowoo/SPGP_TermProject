@@ -114,7 +114,7 @@ class EnemyGenerator(
         val startX = gctx.metrics.width + enemyRadius + 30f
         val startY = Random.nextInt(100, (gctx.metrics.height - 100f).toInt()).toFloat()
 
-        val enemy = Enemy(startX = startX, startY = startY, hp = hp, maxHp = hp, rewardGold = reward, radius = enemyRadius, speed = enemySpeed, isBoss = false, attackDamage = damage, fireInterval = fireInterval, enemyType = type)
+        val enemy = Enemy(gctx, startX = startX, startY = startY, hp = hp, maxHp = hp, rewardGold = reward, radius = enemyRadius, speed = enemySpeed, isBoss = false, attackDamage = damage, fireInterval = fireInterval, enemyType = type)
         world.add(enemy, MainScene.Layer.ENEMY)
     }
 
@@ -124,7 +124,7 @@ class EnemyGenerator(
         val startX = gctx.metrics.width + stage.enemyRadius + 120f
         val startY = gctx.metrics.height * 0.5f
 
-        val boss = BossEnemy(startX = startX, startY = startY, hp = stage.enemyBaseHp, rewardGold = stage.coinReward, radius = stage.enemyRadius, speed = stage.enemySpeed, attackDamage = stage.enemyAttackDamage, fireInterval = stage.enemyFireInterval)
+        val boss = BossEnemy(gctx, startX = startX, startY = startY, hp = stage.enemyBaseHp, rewardGold = stage.coinReward, radius = stage.enemyRadius, speed = stage.enemySpeed, attackDamage = stage.enemyAttackDamage, fireInterval = stage.enemyFireInterval)
         world.add(boss, MainScene.Layer.ENEMY)
     }
 

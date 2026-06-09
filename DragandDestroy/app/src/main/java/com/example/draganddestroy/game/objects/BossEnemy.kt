@@ -3,12 +3,15 @@ package com.example.draganddestroy.game.objects
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import com.example.draganddestroy.R
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
 class BossEnemy(
+    gctx: GameContext,
     startX: Float,
     startY: Float,
     hp: Int,
@@ -17,7 +20,7 @@ class BossEnemy(
     speed: Float,
     attackDamage: Int,
     fireInterval: Float,
-) : Enemy(startX, startY, hp, hp, rewardGold, radius, speed, true, attackDamage, fireInterval) {
+) : Enemy(gctx, startX, startY, hp, hp, rewardGold, radius, speed, true, attackDamage, fireInterval) {
 
     private var targetX = startX
     private var patternTimer = 0f
@@ -29,15 +32,7 @@ class BossEnemy(
     private var rushMode = false
     private var rushDirY = 1f
 
-    private val bossBodyPaint = Paint().apply {
-        color = Color.rgb(160, 40, 230)
-        isAntiAlias = true
-    }
-
-    private val bossCorePaint = Paint().apply {
-        color = Color.rgb(255, 80, 180)
-        isAntiAlias = true
-    }
+    private val bossSprite = Sprite(gctx, R.drawable.boss_enemy)
 
     private val bossTextPaint = Paint().apply {
         color = Color.WHITE
@@ -74,6 +69,11 @@ class BossEnemy(
             hpRatio <= 0.66f -> 2
             else -> 1
         }
+
+    init {
+        bossSprite.setSize(radius * 3.0f, radius * 3.0f)
+        bossSprite.setCenter(x, y)
+    }
 
     override val collisionDamage: Int
         get() = attackDamage * 3
@@ -130,7 +130,7 @@ class BossEnemy(
                 rushMode = false
             }
         } else {
-            y = gctx.metrics.height * 0.5f + sin(moveTime * phaseMoveSpeed) * phaseMovePower
+            y = gctx.metrics.height * 0.5f + sin((moveTime * phaseMoveSpeed).toDouble()).toFloat() * phaseMovePower
         }
 
         if (y < radius) y = radius
@@ -145,13 +145,11 @@ class BossEnemy(
         canvas.drawLine(hpBarLeft, hpBarY, hpBarRight, hpBarY, hpBgPaint)
         canvas.drawLine(hpBarLeft, hpBarY, hpBarLeft + (hpBarRight - hpBarLeft) * hpRatio.coerceIn(0f, 1f), hpBarY, hpPaint)
 
-        canvas.drawCircle(x, y, radius, bossBodyPaint)
-        canvas.drawCircle(x, y, radius * 0.45f, bossCorePaint)
-        canvas.drawCircle(x - 35f, y - 32f, 10f, eyePaint)
-        canvas.drawCircle(x + 35f, y - 32f, 10f, eyePaint)
+        bossSprite.setCenter(x, y)
+        bossSprite.draw(canvas)
 
-        canvas.drawText("BOSS", x, y + 12f, bossTextPaint)
-        canvas.drawText("PHASE $phase", x, y + radius + 38f, phaseTextPaint)
+        canvas.drawText("BOSS", x, y + radius + 18f, bossTextPaint)
+        canvas.drawText("PHASE $phase", x, y + radius + 52f, phaseTextPaint)
     }
 
     override fun tryFireAt(targetX: Float, targetY: Float): EnemyBullet? {
@@ -201,6 +199,7 @@ class BossEnemy(
 
     private fun addAimedShot(bullets: ArrayList<EnemyBullet>, targetX: Float, targetY: Float) {
         val count = if (phase >= 2) 2 else 1
+
         for (i in 0 until count) {
             val offsetY = (i - (count - 1) * 0.5f) * 35f
             bullets.add(EnemyBullet(startX = x - radius, startY = y + offsetY, dirX = targetX - x, dirY = targetY - y + offsetY, damage = attackDamage, speed = 620f + phase * 60f, radius = 13f, color = Color.rgb(255, 70, 70)))

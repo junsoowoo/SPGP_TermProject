@@ -1,15 +1,16 @@
 package com.example.draganddestroy.game.objects
 
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import com.example.draganddestroy.R
 import com.example.draganddestroy.game.data.EnemyType
 import com.example.draganddestroy.game.scene.MainScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.sin
 
 open class Enemy(
+    protected val gctx: GameContext,
     startX: Float,
     startY: Float,
     protected var hp: Int,
@@ -40,25 +41,17 @@ open class Enemy(
     open val collisionDamage: Int
         get() = if (isBoss) attackDamage * 2 else attackDamage
 
-    protected val bodyPaint = Paint().apply {
-        color = when (enemyType) {
-            EnemyType.NORMAL -> Color.RED
-            EnemyType.FAST -> Color.rgb(255, 140, 40)
-            EnemyType.TANK -> Color.rgb(120, 80, 255)
-        }
-        isAntiAlias = true
+    private val imageResId = when (enemyType) {
+        EnemyType.NORMAL -> R.drawable.enemy_normal
+        EnemyType.FAST -> R.drawable.enemy_fast
+        EnemyType.TANK -> R.drawable.enemy_tank
     }
 
-    protected val eyePaint = Paint().apply {
-        color = Color.WHITE
-        isAntiAlias = true
-    }
+    protected val sprite = Sprite(gctx, imageResId)
 
-    protected val textPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 22f
-        textAlign = Paint.Align.CENTER
-        isAntiAlias = true
+    init {
+        sprite.setSize(radius * 2.4f, radius * 2.4f)
+        sprite.setCenter(x, y)
     }
 
     override fun update(gctx: GameContext) {
@@ -79,7 +72,7 @@ open class Enemy(
             EnemyType.TANK -> 2.5f
         }
 
-        y = baseY + sin(moveTime * waveSpeed) * wavePower
+        y = baseY + sin((moveTime * waveSpeed).toDouble()).toFloat() * wavePower
 
         if (y < radius) y = radius
         if (y > gctx.metrics.height - radius) y = gctx.metrics.height - radius
@@ -92,17 +85,8 @@ open class Enemy(
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.drawCircle(x, y, radius, bodyPaint)
-
-        val label = when (enemyType) {
-            EnemyType.NORMAL -> "N"
-            EnemyType.FAST -> "F"
-            EnemyType.TANK -> "T"
-        }
-
-        canvas.drawText(label, x, y + 8f, textPaint)
-        canvas.drawCircle(x - radius * 0.28f, y - radius * 0.25f, 5f, eyePaint)
-        canvas.drawCircle(x + radius * 0.28f, y - radius * 0.25f, 5f, eyePaint)
+        sprite.setCenter(x, y)
+        sprite.draw(canvas)
     }
 
     open fun takeDamage(damage: Int) {

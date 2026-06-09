@@ -27,6 +27,8 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.util.Gauge
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.sqrt
 import kotlin.random.Random
+import com.example.draganddestroy.R
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
 
@@ -644,11 +646,41 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     }
 
     private inner class BackgroundObject : IGameObject {
+
+        private val farBg = Sprite(gctx, R.drawable.bg_space_far)
+        private val nearBg1 = Sprite(gctx, R.drawable.bg_space_near)
+        private val nearBg2 = Sprite(gctx, R.drawable.bg_space_near)
+
+        private var nearScrollX = 0f
+
+        init {
+            farBg.setSize(gctx.metrics.width, gctx.metrics.height)
+            farBg.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
+
+            nearBg1.setSize(gctx.metrics.width, gctx.metrics.height)
+            nearBg2.setSize(gctx.metrics.width, gctx.metrics.height)
+
+            nearBg1.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
+            nearBg2.setCenter(gctx.metrics.width + gctx.metrics.width / 2f, gctx.metrics.height / 2f)
+        }
+
         override fun update(gctx: GameContext) {
+            nearScrollX -= 60f * gctx.frameTime
+
+            if (nearScrollX <= -gctx.metrics.width) {
+                nearScrollX += gctx.metrics.width
+            }
         }
 
         override fun draw(canvas: Canvas) {
-            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, bgPaint)
+            farBg.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
+            farBg.draw(canvas)
+
+            nearBg1.setCenter(gctx.metrics.width / 2f + nearScrollX, gctx.metrics.height / 2f)
+            nearBg2.setCenter(gctx.metrics.width + gctx.metrics.width / 2f + nearScrollX, gctx.metrics.height / 2f)
+
+            nearBg1.draw(canvas)
+            nearBg2.draw(canvas)
         }
     }
 
