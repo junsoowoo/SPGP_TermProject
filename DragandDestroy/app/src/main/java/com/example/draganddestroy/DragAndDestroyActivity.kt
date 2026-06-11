@@ -2,7 +2,7 @@ package com.example.draganddestroy
 
 import android.view.KeyEvent
 import com.example.draganddestroy.game.data.DebugCommand
-import com.example.draganddestroy.game.scene.StageSelectScene
+import com.example.draganddestroy.game.scene.TitleScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.activity.BaseGameActivity
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
@@ -15,7 +15,7 @@ class DragAndDestroyActivity : BaseGameActivity() {
 
     override fun createRootScene(gctx: GameContext): Scene {
         gctx.metrics.setSize(1600f, 900f)
-        return StageSelectScene(gctx)
+        return TitleScene(gctx)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

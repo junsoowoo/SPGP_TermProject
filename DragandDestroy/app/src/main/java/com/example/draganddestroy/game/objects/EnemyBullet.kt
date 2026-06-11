@@ -2,13 +2,15 @@ package com.example.draganddestroy.game.objects
 
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
+import com.example.draganddestroy.R
 import com.example.draganddestroy.game.scene.MainScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.sqrt
 
 class EnemyBullet(
+    private val gctx: GameContext,
     startX: Float,
     startY: Float,
     dirX: Float,
@@ -17,6 +19,7 @@ class EnemyBullet(
     private val speed: Float = 520f,
     val radius: Float = 12f,
     private val color: Int = Color.rgb(255, 90, 60),
+    private val bossBullet: Boolean = false,
 ) : IGameObject {
 
     var x = startX
@@ -30,16 +33,19 @@ class EnemyBullet(
     private var vx = -1f
     private var vy = 0f
 
-    private val paint = Paint().apply {
-        isAntiAlias = true
-    }
+    private val sprite = Sprite(gctx, if (bossBullet) R.drawable.bullet_boss else R.drawable.bullet_enemy)
 
     init {
         val length = sqrt(dirX * dirX + dirY * dirY)
+
         if (length > 0.0001f) {
             vx = dirX / length
             vy = dirY / length
         }
+
+        val size = if (bossBullet) radius * 5.0f else radius * 4.0f
+        sprite.setSize(size, size * 0.45f)
+        sprite.setCenter(x, y)
     }
 
     override fun update(gctx: GameContext) {
@@ -54,7 +60,7 @@ class EnemyBullet(
     }
 
     override fun draw(canvas: Canvas) {
-        paint.color = color
-        canvas.drawCircle(x, y, radius, paint)
+        sprite.setCenter(x, y)
+        sprite.draw(canvas)
     }
 }

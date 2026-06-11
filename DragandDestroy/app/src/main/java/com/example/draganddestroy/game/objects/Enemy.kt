@@ -104,6 +104,6 @@ open class Enemy(
         if (fireTimer < fireInterval) return null
 
         fireTimer = 0f
-        return EnemyBullet(startX = x - radius, startY = y, dirX = targetX - x, dirY = targetY - y, damage = attackDamage)
+        return EnemyBullet(gctx = gctx, startX = x - radius, startY = y, dirX = targetX - x, dirY = targetY - y, damage = attackDamage)
     }
 }

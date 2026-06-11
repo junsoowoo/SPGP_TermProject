@@ -3,10 +3,12 @@ package com.example.draganddestroy.game.objects
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import com.example.draganddestroy.R
 import com.example.draganddestroy.game.data.GameStats
 import com.example.draganddestroy.game.data.TurretType
 import com.example.draganddestroy.game.scene.MainScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.World
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 
@@ -41,26 +43,16 @@ class TemporaryTurret(
     private var currentTargetY = y - 1f
     private var hasTarget = false
 
-    private val bodyPaint = Paint().apply {
-        color = if (type == TurretType.BASIC) Color.MAGENTA else Color.rgb(60, 220, 255)
-        isAntiAlias = true
-    }
-
-    private val barrelPaint = Paint().apply {
-        color = Color.WHITE
-        strokeWidth = 6f
-        strokeCap = Paint.Cap.ROUND
-        isAntiAlias = true
-    }
+    private val sprite = Sprite(gctx, if (type == TurretType.BASIC) R.drawable.turret_basic else R.drawable.turret_rapid)
 
     private val rangePaint = Paint().apply {
-        color = if (type == TurretType.BASIC) Color.argb(30, 255, 0, 255) else Color.argb(25, 60, 220, 255)
+        color = if (type == TurretType.BASIC) Color.argb(25, 255, 0, 255) else Color.argb(22, 60, 220, 255)
         style = Paint.Style.FILL
         isAntiAlias = true
     }
 
     private val rangeLinePaint = Paint().apply {
-        color = if (type == TurretType.BASIC) Color.argb(90, 255, 0, 255) else Color.argb(90, 60, 220, 255)
+        color = if (type == TurretType.BASIC) Color.argb(85, 255, 0, 255) else Color.argb(85, 60, 220, 255)
         style = Paint.Style.STROKE
         strokeWidth = 2f
         isAntiAlias = true
@@ -71,6 +63,12 @@ class TemporaryTurret(
         strokeWidth = 3f
         strokeCap = Paint.Cap.ROUND
         isAntiAlias = true
+    }
+
+    init {
+        val size = if (type == TurretType.BASIC) 90f else 84f
+        sprite.setSize(size, size)
+        sprite.setCenter(x, y)
     }
 
     override fun update(gctx: GameContext) {
@@ -102,16 +100,15 @@ class TemporaryTurret(
 
         if (hasTarget) {
             canvas.drawLine(x, y, currentTargetX, currentTargetY, aimPaint)
-        } else {
-            canvas.drawLine(x, y, x, y - 38f, aimPaint)
         }
 
-        canvas.drawCircle(x, y, radius, bodyPaint)
-        canvas.drawLine(x, y, x, y - 30f, barrelPaint)
+        sprite.setCenter(x, y)
+        sprite.draw(canvas)
     }
 
     fun takeDamage(damage: Int) {
         hp -= damage
+
         if (hp <= 0) {
             hp = 0
             isDead = true
@@ -148,6 +145,6 @@ class TemporaryTurret(
         val damage = if (type == TurretType.BASIC) GameStats.getBasicTurretDamage() else GameStats.getRapidTurretDamage()
         val color = if (type == TurretType.BASIC) Color.MAGENTA else Color.rgb(60, 220, 255)
 
-        world.add(Bullet(startX = x, startY = y, damage = damage, color = color, dirX = dirX, dirY = dirY, speed = bulletSpeed), MainScene.Layer.BULLET)
+        world.add(Bullet(gctx = gctx, startX = x, startY = y, damage = damage, color = color, dirX = dirX, dirY = dirY, speed = bulletSpeed), MainScene.Layer.BULLET)
     }
 }

@@ -29,6 +29,10 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 import com.example.draganddestroy.R
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
+import com.example.draganddestroy.game.objects.ExplosionEffect
+import com.example.draganddestroy.game.objects.HitEffect
+import com.example.draganddestroy.game.objects.TurretSpawnEffect
+import com.example.draganddestroy.game.objects.HorzScreenScrollBackground
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
 
@@ -422,6 +426,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         val installX = x.coerceIn(TURRET_RADIUS, gctx.metrics.width - TURRET_RADIUS)
         val installY = y.coerceIn(TURRET_RADIUS, gctx.metrics.height - TURRET_RADIUS)
 
+        world.add(TurretSpawnEffect(gctx, installX, installY), Layer.EFFECT)
         world.add(TemporaryTurret(gctx, world, installX, installY, GameStats.selectedTurretType), Layer.TURRET)
         turretEnergy -= cost
 
@@ -463,6 +468,8 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                 if (enemy.isDead) continue
 
                 if (CollisionHelper.circleCollision(bullet.x, bullet.y, bullet.radius, enemy.x, enemy.y, enemy.radius)) {
+                    world.add(HitEffect(gctx, bullet.x, bullet.y), Layer.EFFECT)
+
                     enemy.takeDamage(bullet.damage)
                     bullet.isDead = true
                     world.remove(bullet, Layer.BULLET)
@@ -474,6 +481,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                             bossKilled = true
                         }
 
+                        world.add(ExplosionEffect(gctx, enemy.x, enemy.y), Layer.EFFECT)
                         dropRewards(enemy.x, enemy.y, enemy.rewardGold)
                         world.remove(enemy, Layer.ENEMY)
                     }
@@ -487,17 +495,17 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     private fun dropRewards(x: Float, y: Float, baseGold: Int) {
         val largeCoin = Random.nextInt(100) < LARGE_COIN_DROP_RATE
         val coinValue = if (largeCoin) baseGold * 3 else baseGold
-        world.add(Coin(x, y, coinValue, largeCoin), Layer.COIN)
+        world.add(Coin(gctx, x, y, coinValue, largeCoin), Layer.COIN)
 
         val itemRoll = Random.nextInt(100)
 
         when {
             itemRoll < MAGNET_DROP_RATE -> {
-                world.add(PickupItem(x + 25f, y - 25f, PickupType.MAGNET), Layer.PICKUP)
+                world.add(PickupItem(gctx, x + 25f, y - 25f, PickupType.MAGNET), Layer.PICKUP)
             }
 
             itemRoll < MAGNET_DROP_RATE + HEAL_DROP_RATE -> {
-                world.add(PickupItem(x + 25f, y - 25f, PickupType.HEAL), Layer.PICKUP)
+                world.add(PickupItem(gctx, x + 25f, y - 25f, PickupType.HEAL), Layer.PICKUP)
             }
         }
     }
@@ -647,44 +655,45 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
     private inner class BackgroundObject : IGameObject {
 
-        private val farBg = Sprite(gctx, R.drawable.bg_space_far)
-        private val nearBg1 = Sprite(gctx, R.drawable.bg_space_near)
-        private val nearBg2 = Sprite(gctx, R.drawable.bg_space_near)
-
-        private var nearScrollX = 0f
-
-        init {
-            farBg.setSize(gctx.metrics.width, gctx.metrics.height)
-            farBg.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
-
-            nearBg1.setSize(gctx.metrics.width, gctx.metrics.height)
-            nearBg2.setSize(gctx.metrics.width, gctx.metrics.height)
-
-            nearBg1.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
-            nearBg2.setCenter(gctx.metrics.width + gctx.metrics.width / 2f, gctx.metrics.height / 2f)
-        }
+        private val farBg = HorzScreenScrollBackground(gctx, R.drawable.bg_space_far, -25f)
+        private val nearBg = HorzScreenScrollBackground(gctx, R.drawable.bg_space_near, -70f)
 
         override fun update(gctx: GameContext) {
-            nearScrollX -= 60f * gctx.frameTime
-
-            if (nearScrollX <= -gctx.metrics.width) {
-                nearScrollX += gctx.metrics.width
-            }
+            farBg.update(gctx)
+            nearBg.update(gctx)
         }
 
         override fun draw(canvas: Canvas) {
-            farBg.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
+            canvas.drawColor(Color.rgb(6, 8, 18))
+
             farBg.draw(canvas)
-
-            nearBg1.setCenter(gctx.metrics.width / 2f + nearScrollX, gctx.metrics.height / 2f)
-            nearBg2.setCenter(gctx.metrics.width + gctx.metrics.width / 2f + nearScrollX, gctx.metrics.height / 2f)
-
-            nearBg1.draw(canvas)
-            nearBg2.draw(canvas)
+            nearBg.draw(canvas)
         }
     }
 
     private inner class HudObject : IGameObject {
+
+        private val hpIcon = Sprite(gctx, R.drawable.icon_hp)
+        private val energyIcon = Sprite(gctx, R.drawable.icon_energy)
+        private val coinIcon = Sprite(gctx, R.drawable.icon_coin)
+        private val magnetIcon = Sprite(gctx, R.drawable.icon_magnet)
+        private val pauseIcon = Sprite(gctx, R.drawable.btn_pause)
+
+        private val joystickBaseSprite = Sprite(gctx, R.drawable.joystick_base)
+        private val joystickKnobSprite = Sprite(gctx, R.drawable.joystick_knob)
+
+        init {
+            hpIcon.setSize(34f, 34f)
+            energyIcon.setSize(34f, 34f)
+            coinIcon.setSize(34f, 34f)
+            magnetIcon.setSize(34f, 34f)
+
+            pauseIcon.setSize(115f, 55f)
+
+            joystickBaseSprite.setSize(JOYSTICK_BG_RADIUS * 2.2f, JOYSTICK_BG_RADIUS * 2.2f)
+            joystickKnobSprite.setSize(JOYSTICK_THUMB_RADIUS * 2.2f, JOYSTICK_THUMB_RADIUS * 2.2f)
+        }
+
         override fun update(gctx: GameContext) {
         }
 
@@ -697,29 +706,34 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             canvas.drawText("Time: ${stageTimeLeft.toInt()}", 20f, 68f, smallTextPaint)
             canvas.drawText("Kill: $killCount", 140f, 68f, smallTextPaint)
 
-            canvas.drawText("HP", 280f, 32f, smallTextPaint)
+            hpIcon.setCenter(292f, 31f)
+            hpIcon.draw(canvas)
             playerHpGauge.draw(canvas, 320f, 22f, 180f, player.hp.toFloat() / player.maxHp.toFloat())
 
-            canvas.drawText("Energy", 540f, 32f, smallTextPaint)
-            turretGauge.draw(canvas, 625f, 22f, 180f, turretEnergy / MAX_TURRET_ENERGY)
+            energyIcon.setCenter(562f, 31f)
+            energyIcon.draw(canvas)
+            turretGauge.draw(canvas, 595f, 22f, 180f, turretEnergy / MAX_TURRET_ENERGY)
 
-            canvas.drawText("Coin: ${GameStats.gold}", 840f, 32f, smallTextPaint)
-            canvas.drawText("Stage: ${GameStats.stageGold}", 840f, 68f, smallTextPaint)
+            coinIcon.setCenter(820f, 31f)
+            coinIcon.draw(canvas)
+            canvas.drawText("${GameStats.gold}", 845f, 32f, smallTextPaint)
+            canvas.drawText("Stage: ${GameStats.stageGold}", 820f, 68f, smallTextPaint)
 
             canvas.drawText("Turret: ${GameStats.selectedTurretType}", 1040f, 32f, smallTextPaint)
             canvas.drawText("Cost: ${getCurrentTurretCost().toInt()}", 1040f, 68f, smallTextPaint)
 
             if (magnetTime > 0f) {
-                canvas.drawText("Magnet", 1230f, 32f, smallTextPaint)
-                magnetGauge.draw(canvas, 1230f, 52f, 160f, magnetTime / MAGNET_DURATION)
+                magnetIcon.setCenter(1230f, 31f)
+                magnetIcon.draw(canvas)
+                magnetGauge.draw(canvas, 1260f, 22f, 140f, magnetTime / MAGNET_DURATION)
             }
 
             if (stage.isBossStage) {
                 canvas.drawText("Boss: ${if (bossKilled) "CLEAR" else "ALIVE"}", 1230f, 68f, smallTextPaint)
             }
 
-            canvas.drawRoundRect(pauseButton, 14f, 14f, pauseButtonPaint)
-            canvas.drawText("PAUSE", pauseButton.centerX(), pauseButton.centerY() + 8f, pauseTextPaint)
+            pauseIcon.setCenter(pauseButton.centerX(), pauseButton.centerY())
+            pauseIcon.draw(canvas)
 
             drawJoystick(canvas)
         }
@@ -728,13 +742,14 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             val centerX = getJoystickCenterX()
             val centerY = getJoystickCenterY()
 
-            canvas.drawCircle(centerX, centerY, JOYSTICK_BG_RADIUS, joystickFillPaint)
-            canvas.drawCircle(centerX, centerY, JOYSTICK_BG_RADIUS, joystickBgPaint)
+            joystickBaseSprite.setCenter(centerX, centerY)
+            joystickBaseSprite.draw(canvas)
 
             val thumbX = if (joystickActive) joystickThumbX else centerX
             val thumbY = if (joystickActive) joystickThumbY else centerY
 
-            canvas.drawCircle(thumbX, thumbY, JOYSTICK_THUMB_RADIUS, joystickThumbPaint)
+            joystickKnobSprite.setCenter(thumbX, thumbY)
+            joystickKnobSprite.draw(canvas)
         }
     }
 

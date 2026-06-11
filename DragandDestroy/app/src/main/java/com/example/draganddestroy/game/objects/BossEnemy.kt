@@ -202,7 +202,7 @@ class BossEnemy(
 
         for (i in 0 until count) {
             val offsetY = (i - (count - 1) * 0.5f) * 35f
-            bullets.add(EnemyBullet(startX = x - radius, startY = y + offsetY, dirX = targetX - x, dirY = targetY - y + offsetY, damage = attackDamage, speed = 620f + phase * 60f, radius = 13f, color = Color.rgb(255, 70, 70)))
+            bullets.add(EnemyBullet(gctx = gctx, startX = x - radius, startY = y + offsetY, dirX = targetX - x, dirY = targetY - y + offsetY, damage = attackDamage, speed = 620f + phase * 60f, radius = 16f, color = Color.rgb(255, 70, 70), bossBullet = true))
         }
     }
 
@@ -227,7 +227,7 @@ class BossEnemy(
             val dirX = baseDirX * cosA - baseDirY * sinA
             val dirY = baseDirX * sinA + baseDirY * cosA
 
-            bullets.add(EnemyBullet(startX = x - radius, startY = y, dirX = dirX, dirY = dirY, damage = attackDamage + phase * 2, speed = 520f + phase * 45f, radius = 12f, color = Color.rgb(255, 140, 40)))
+            bullets.add(EnemyBullet(gctx = gctx, startX = x - radius, startY = y, dirX = dirX, dirY = dirY, damage = attackDamage + phase * 2, speed = 520f + phase * 45f, radius = 15f, color = Color.rgb(255, 140, 40), bossBullet = true))
         }
     }
 
@@ -243,7 +243,7 @@ class BossEnemy(
             val dirX = cos(angle)
             val dirY = sin(angle)
 
-            bullets.add(EnemyBullet(startX = x, startY = y, dirX = dirX, dirY = dirY, damage = attackDamage + phase * 3, speed = 380f + phase * 40f, radius = 10f, color = Color.rgb(255, 40, 180)))
+            bullets.add(EnemyBullet(gctx = gctx, startX = x, startY = y, dirX = dirX, dirY = dirY, damage = attackDamage + phase * 3, speed = 380f + phase * 40f, radius = 14f, color = Color.rgb(255, 40, 180), bossBullet = true))
         }
     }
 }

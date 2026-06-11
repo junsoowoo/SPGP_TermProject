@@ -80,7 +80,7 @@ class PlayerShip(
         if (fireTimer < GameStats.playerFireInterval) return null
 
         fireTimer = 0f
-        return Bullet(startX = x + 80f, startY = y, damage = GameStats.playerDamage, color = Color.YELLOW, dirX = 1f, dirY = 0f, speed = 1500f)
+        return Bullet(gctx = gctx, startX = x + 80f, startY = y, damage = GameStats.playerDamage, color = Color.YELLOW, dirX = 1f, dirY = 0f, speed = 1500f)
     }
 
     fun takeDamage(damage: Int) {

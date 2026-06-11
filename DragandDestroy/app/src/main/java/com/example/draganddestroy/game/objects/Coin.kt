@@ -1,15 +1,17 @@
 package com.example.draganddestroy.game.objects
 
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import com.example.draganddestroy.R
 import com.example.draganddestroy.game.data.GameStats
 import com.example.draganddestroy.game.scene.MainScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class Coin(
+    private val gctx: GameContext,
     startX: Float,
     startY: Float,
     private val baseValue: Int,
@@ -31,23 +33,19 @@ class Coin(
     private val speed = if (large) 210f else 260f
     private var floatTime = 0f
 
-    private val coinPaint = Paint().apply {
-        color = if (large) Color.rgb(255, 180, 30) else Color.YELLOW
-        isAntiAlias = true
-    }
+    private val sprite = Sprite(gctx, if (large) R.drawable.coin_large else R.drawable.coin_small)
 
-    private val textPaint = Paint().apply {
-        color = Color.BLACK
-        textSize = if (large) 26f else 18f
-        textAlign = Paint.Align.CENTER
-        isAntiAlias = true
+    init {
+        val size = if (large) 70f else 46f
+        sprite.setSize(size, size)
+        sprite.setCenter(x, y)
     }
 
     override fun update(gctx: GameContext) {
         floatTime += gctx.frameTime
 
         x -= speed * gctx.frameTime
-        y += kotlin.math.sin(floatTime * 6f) * 20f * gctx.frameTime
+        y += sin(floatTime * 6f) * 20f * gctx.frameTime
 
         if (x < -50f) {
             isDead = true
@@ -57,8 +55,8 @@ class Coin(
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.drawCircle(x, y, radius, coinPaint)
-        canvas.drawText(if (large) "$$" else "$", x, y + 7f, textPaint)
+        sprite.setCenter(x, y)
+        sprite.draw(canvas)
     }
 
     fun moveToward(targetX: Float, targetY: Float, frameTime: Float) {

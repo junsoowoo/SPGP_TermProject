@@ -2,13 +2,15 @@ package com.example.draganddestroy.game.objects
 
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
+import com.example.draganddestroy.R
 import com.example.draganddestroy.game.scene.MainScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.sqrt
 
 class Bullet(
+    private val gctx: GameContext,
     startX: Float,
     startY: Float,
     val damage: Int,
@@ -30,12 +32,18 @@ class Bullet(
     private var vx = 1f
     private var vy = 0f
 
-    private val paint = Paint().apply {
-        isAntiAlias = true
+    private val imageResId = when (color) {
+        Color.MAGENTA -> R.drawable.bullet_turret_basic
+        Color.rgb(60, 220, 255) -> R.drawable.bullet_turret_rapid
+        else -> R.drawable.bullet_player
     }
+
+    private val sprite = Sprite(gctx, imageResId)
 
     init {
         setDirection(dirX, dirY)
+        sprite.setSize(54f, 24f)
+        sprite.setCenter(x, y)
     }
 
     override fun update(gctx: GameContext) {
@@ -50,8 +58,8 @@ class Bullet(
     }
 
     override fun draw(canvas: Canvas) {
-        paint.color = color
-        canvas.drawCircle(x, y, radius, paint)
+        sprite.setCenter(x, y)
+        sprite.draw(canvas)
     }
 
     private fun setDirection(dirX: Float, dirY: Float) {
