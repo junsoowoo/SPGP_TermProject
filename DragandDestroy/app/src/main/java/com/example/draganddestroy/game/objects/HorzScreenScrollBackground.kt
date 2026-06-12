@@ -1,7 +1,6 @@
 package com.example.draganddestroy.game.objects
 
 import android.graphics.Canvas
-import com.example.draganddestroy.R
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 
