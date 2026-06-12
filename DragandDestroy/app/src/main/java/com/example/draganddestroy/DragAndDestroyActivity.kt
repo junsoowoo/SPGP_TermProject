@@ -9,8 +9,8 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 
 class DragAndDestroyActivity : BaseGameActivity() {
 
-    override val drawsDebugGrid: Boolean = true
-    override val drawsDebugInfo: Boolean = true
+    override val drawsDebugGrid: Boolean = false
+    override val drawsDebugInfo: Boolean = false
     override val drawsFpsGraph: Boolean = false
 
     override fun createRootScene(gctx: GameContext): Scene {

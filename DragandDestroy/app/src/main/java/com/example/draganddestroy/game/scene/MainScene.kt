@@ -33,6 +33,7 @@ import com.example.draganddestroy.game.objects.ExplosionEffect
 import com.example.draganddestroy.game.objects.HitEffect
 import com.example.draganddestroy.game.objects.TurretSpawnEffect
 import com.example.draganddestroy.game.objects.HorzScreenScrollBackground
+import com.example.draganddestroy.game.objects.HorzMirrorScrollBackground
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
 
@@ -59,7 +60,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     private val player = PlayerShip(gctx)
     private val enemyGenerator = EnemyGenerator(gctx, world)
 
-    private val pauseButton = RectF(1460f, 20f, 1575f, 75f)
+    private val pauseButton = RectF(1450f, 16f, 1570f, 76f)
 
     private var touchMode = TouchMode.NONE
     private var currentDragPath: DragPathEffect? = null
@@ -655,8 +656,8 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
     private inner class BackgroundObject : IGameObject {
 
-        private val farBg = HorzScreenScrollBackground(gctx, R.drawable.bg_space_far, -25f)
-        private val nearBg = HorzScreenScrollBackground(gctx, R.drawable.bg_space_near, -70f)
+        private val farBg = HorzMirrorScrollBackground(gctx, R.drawable.bg_space_far, 18f)
+        private val nearBg = HorzMirrorScrollBackground(gctx, R.drawable.bg_space_near, 46f)
 
         override fun update(gctx: GameContext) {
             farBg.update(gctx)
@@ -682,16 +683,49 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         private val joystickBaseSprite = Sprite(gctx, R.drawable.joystick_base)
         private val joystickKnobSprite = Sprite(gctx, R.drawable.joystick_knob)
 
+        private val hudPanelPaint = Paint().apply {
+            color = Color.argb(150, 0, 0, 0)
+            isAntiAlias = true
+        }
+
+        private val hudStrokePaint = Paint().apply {
+            color = Color.argb(120, 150, 210, 255)
+            style = Paint.Style.STROKE
+            strokeWidth = 2f
+            isAntiAlias = true
+        }
+
+        private val hudTitlePaint = Paint().apply {
+            color = Color.WHITE
+            textSize = 24f
+            textAlign = Paint.Align.LEFT
+            isAntiAlias = true
+        }
+
+        private val hudSmallPaint = Paint().apply {
+            color = Color.argb(230, 220, 235, 255)
+            textSize = 20f
+            textAlign = Paint.Align.LEFT
+            isAntiAlias = true
+        }
+
+        private val hudValuePaint = Paint().apply {
+            color = Color.WHITE
+            textSize = 22f
+            textAlign = Paint.Align.LEFT
+            isAntiAlias = true
+        }
+
         init {
-            hpIcon.setSize(34f, 34f)
-            energyIcon.setSize(34f, 34f)
-            coinIcon.setSize(34f, 34f)
-            magnetIcon.setSize(34f, 34f)
+            hpIcon.setSize(30f, 30f)
+            energyIcon.setSize(30f, 30f)
+            coinIcon.setSize(30f, 30f)
+            magnetIcon.setSize(30f, 30f)
 
-            pauseIcon.setSize(115f, 55f)
+            pauseIcon.setCenterProportionalWidth(pauseButton.centerX(), pauseButton.centerY(), 92f)
 
-            joystickBaseSprite.setSize(JOYSTICK_BG_RADIUS * 2.2f, JOYSTICK_BG_RADIUS * 2.2f)
-            joystickKnobSprite.setSize(JOYSTICK_THUMB_RADIUS * 2.2f, JOYSTICK_THUMB_RADIUS * 2.2f)
+            joystickBaseSprite.setSize(JOYSTICK_BG_RADIUS * 2.15f, JOYSTICK_BG_RADIUS * 2.15f)
+            joystickKnobSprite.setSize(JOYSTICK_THUMB_RADIUS * 2.15f, JOYSTICK_THUMB_RADIUS * 2.15f)
         }
 
         override fun update(gctx: GameContext) {
@@ -700,42 +734,50 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         override fun draw(canvas: Canvas) {
             val stage = StageManager.currentStage
 
-            canvas.drawRect(0f, 0f, gctx.metrics.width, HUD_HEIGHT, hudBgPaint)
+            drawHudPanel(canvas)
 
-            canvas.drawText(stage.title, 20f, 32f, textPaint)
-            canvas.drawText("Time: ${stageTimeLeft.toInt()}", 20f, 68f, smallTextPaint)
-            canvas.drawText("Kill: $killCount", 140f, 68f, smallTextPaint)
+            canvas.drawText(stage.title, 28f, 30f, hudTitlePaint)
+            canvas.drawText("TIME ${stageTimeLeft.toInt()}", 28f, 61f, hudSmallPaint)
+            canvas.drawText("KILL $killCount", 135f, 61f, hudSmallPaint)
 
-            hpIcon.setCenter(292f, 31f)
+            hpIcon.setCenter(285f, 34f)
             hpIcon.draw(canvas)
-            playerHpGauge.draw(canvas, 320f, 22f, 180f, player.hp.toFloat() / player.maxHp.toFloat())
+            playerHpGauge.draw(canvas, 325f, 25f, 180f, player.hp.toFloat() / player.maxHp.toFloat())
+            canvas.drawText("${player.hp}/${player.maxHp}", 520f, 39f, hudValuePaint)
 
-            energyIcon.setCenter(562f, 31f)
+            energyIcon.setCenter(650f, 34f)
             energyIcon.draw(canvas)
-            turretGauge.draw(canvas, 595f, 22f, 180f, turretEnergy / MAX_TURRET_ENERGY)
+            turretGauge.draw(canvas, 690f, 25f, 180f, turretEnergy / MAX_TURRET_ENERGY)
+            canvas.drawText("${turretEnergy.toInt()}/${MAX_TURRET_ENERGY.toInt()}", 885f, 39f, hudValuePaint)
 
-            coinIcon.setCenter(820f, 31f)
+            coinIcon.setCenter(1030f, 34f)
             coinIcon.draw(canvas)
-            canvas.drawText("${GameStats.gold}", 845f, 32f, smallTextPaint)
-            canvas.drawText("Stage: ${GameStats.stageGold}", 820f, 68f, smallTextPaint)
+            canvas.drawText("${GameStats.gold}", 1060f, 39f, hudValuePaint)
+            canvas.drawText("STAGE ${GameStats.stageGold}", 1060f, 66f, hudSmallPaint)
 
-            canvas.drawText("Turret: ${GameStats.selectedTurretType}", 1040f, 32f, smallTextPaint)
-            canvas.drawText("Cost: ${getCurrentTurretCost().toInt()}", 1040f, 68f, smallTextPaint)
+            canvas.drawText("TURRET ${GameStats.selectedTurretType}", 1235f, 34f, hudSmallPaint)
+            canvas.drawText("COST ${getCurrentTurretCost().toInt()}", 1235f, 64f, hudSmallPaint)
 
             if (magnetTime > 0f) {
-                magnetIcon.setCenter(1230f, 31f)
+                magnetIcon.setCenter(1350f, 58f)
                 magnetIcon.draw(canvas)
-                magnetGauge.draw(canvas, 1260f, 22f, 140f, magnetTime / MAGNET_DURATION)
+                magnetGauge.draw(canvas, 1380f, 50f, 80f, magnetTime / MAGNET_DURATION)
             }
 
             if (stage.isBossStage) {
-                canvas.drawText("Boss: ${if (bossKilled) "CLEAR" else "ALIVE"}", 1230f, 68f, smallTextPaint)
+                canvas.drawText("BOSS ${if (bossKilled) "CLEAR" else "ALIVE"}", 1235f, 86f, hudSmallPaint)
             }
 
             pauseIcon.setCenter(pauseButton.centerX(), pauseButton.centerY())
             pauseIcon.draw(canvas)
 
             drawJoystick(canvas)
+        }
+
+        private fun drawHudPanel(canvas: Canvas) {
+            val panel = RectF(12f, 8f, gctx.metrics.width - 12f, HUD_HEIGHT - 8f)
+            canvas.drawRoundRect(panel, 18f, 18f, hudPanelPaint)
+            canvas.drawRoundRect(panel, 18f, 18f, hudStrokePaint)
         }
 
         private fun drawJoystick(canvas: Canvas) {
@@ -758,7 +800,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
         private const val INVALID_POINTER_ID = -1
 
-        private const val HUD_HEIGHT = 92f
+        private const val HUD_HEIGHT = 84f
 
         private const val MAX_TURRET_ENERGY = 500f
         private const val BASE_TURRET_COST = 85f
