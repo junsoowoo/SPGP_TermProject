@@ -11,6 +11,7 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.World
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
+import kotlin.math.atan2
 
 class TemporaryTurret(
     private val gctx: GameContext,
@@ -43,6 +44,8 @@ class TemporaryTurret(
     private var currentTargetY = y - 1f
     private var hasTarget = false
 
+    private var turretAngle = 0f
+
     private val sprite = Sprite(gctx, if (type == TurretType.BASIC) R.drawable.turret_basic else R.drawable.turret_rapid)
 
     private val rangePaint = Paint().apply {
@@ -66,7 +69,7 @@ class TemporaryTurret(
     }
 
     init {
-        val size = if (type == TurretType.BASIC) 90f else 84f
+        val size = if (type == TurretType.BASIC) 118f else 108f
         sprite.setSize(size, size)
         sprite.setCenter(x, y)
     }
@@ -81,6 +84,7 @@ class TemporaryTurret(
         if (target != null) {
             currentTargetX = target.x
             currentTargetY = target.y
+            turretAngle = getAngleTo(currentTargetX, currentTargetY)
 
             if (fireTimer >= fireInterval) {
                 fireTimer = 0f
@@ -103,7 +107,11 @@ class TemporaryTurret(
         }
 
         sprite.setCenter(x, y)
+
+        canvas.save()
+        canvas.rotate(turretAngle, x, y)
         sprite.draw(canvas)
+        canvas.restore()
     }
 
     fun takeDamage(damage: Int) {
@@ -146,5 +154,12 @@ class TemporaryTurret(
         val color = if (type == TurretType.BASIC) Color.MAGENTA else Color.rgb(60, 220, 255)
 
         world.add(Bullet(gctx = gctx, startX = x, startY = y, damage = damage, color = color, dirX = dirX, dirY = dirY, speed = bulletSpeed), MainScene.Layer.BULLET)
+    }
+
+    private fun getAngleTo(targetX: Float, targetY: Float): Float {
+        val dx = targetX - x
+        val dy = targetY - y
+
+        return Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
     }
 }

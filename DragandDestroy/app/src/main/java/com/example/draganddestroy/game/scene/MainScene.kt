@@ -396,18 +396,16 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         var currentY = fromY
 
         while (dragDistanceSinceLastTurret + remainDistance >= TURRET_SPACING) {
-            val cost = getCurrentTurretCost()
-
-            if (turretEnergy < cost) {
-                dragDistanceSinceLastTurret = 0f
-                return
-            }
-
             val needDistance = TURRET_SPACING - dragDistanceSinceLastTurret
             val installX = currentX + dirX * needDistance
             val installY = currentY + dirY * needDistance
 
-            tryInstallTurretAt(installX, installY)
+            val installed = tryInstallTurretAt(installX, installY)
+
+            if (!installed) {
+                dragDistanceSinceLastTurret = 0f
+                return
+            }
 
             currentX = installX
             currentY = installY
@@ -429,7 +427,9 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
         world.add(TurretSpawnEffect(gctx, installX, installY), Layer.EFFECT)
         world.add(TemporaryTurret(gctx, world, installX, installY, GameStats.selectedTurretType), Layer.TURRET)
+
         turretEnergy -= cost
+        if (turretEnergy < 0f) turretEnergy = 0f
 
         return true
     }
@@ -804,8 +804,8 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
         private const val MAX_TURRET_ENERGY = 560f
         private const val BASE_TURRET_COST = 75f
-        private const val TURRET_SPACING = 60f
-        private const val TURRET_RADIUS = 20f
+        private const val TURRET_SPACING = 105f
+        private const val TURRET_RADIUS = 58f
         private const val TURRET_ENERGY_RECOVER_PER_SEC = 45f
 
         private const val MID_STAGE_SHOP_INTERVAL = 20f
