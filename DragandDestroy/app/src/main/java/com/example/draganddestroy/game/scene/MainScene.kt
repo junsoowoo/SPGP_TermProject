@@ -93,60 +93,27 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     private val playerHpGauge = Gauge(thickness = 0.14f, fgColor = Color.GREEN, bgColor = Color.DKGRAY)
     private val magnetGauge = Gauge(thickness = 0.12f, fgColor = Color.rgb(70, 160, 255), bgColor = Color.DKGRAY)
 
-    private val bgPaint = Paint().apply {
-        color = Color.rgb(10, 10, 30)
-    }
+    private var stageMessageText = ""
+    private var stageMessageSubText = ""
+    private var stageMessageTime = 0f
 
-    private val hudBgPaint = Paint().apply {
-        color = Color.argb(170, 0, 0, 0)
-    }
+    private var installMessageText = ""
+    private var installMessageTime = 0f
 
-    private val textPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 28f
-        isAntiAlias = true
-    }
-
-    private val smallTextPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 22f
-        isAntiAlias = true
-    }
-
-    private val pauseButtonPaint = Paint().apply {
-        color = Color.argb(220, 40, 40, 70)
-        isAntiAlias = true
-    }
-
-    private val pauseTextPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 24f
-        textAlign = Paint.Align.CENTER
-        isAntiAlias = true
-    }
-
-    private val joystickBgPaint = Paint().apply {
-        color = Color.argb(90, 255, 255, 255)
-        style = Paint.Style.STROKE
-        strokeWidth = 5f
-        isAntiAlias = true
-    }
-
-    private val joystickFillPaint = Paint().apply {
-        color = Color.argb(35, 255, 255, 255)
-        style = Paint.Style.FILL
-        isAntiAlias = true
-    }
-
-    private val joystickThumbPaint = Paint().apply {
-        color = Color.argb(160, 120, 220, 255)
-        style = Paint.Style.FILL
-        isAntiAlias = true
-    }
+    private var pendingStageEndSuccess = false
+    private var stageTransitionDelay = 0f
 
     override fun onEnter() {
         GameStats.resetStageGold()
         resetJoystick()
+
+        val stage = StageManager.currentStage
+        showStageMessage(
+            if (stage.isBossStage) "BOSS STAGE" else "STAGE ${stage.stageNumber} START",
+            stage.title,
+            1.35f
+        )
+
         world.add(BackgroundObject(), Layer.BACKGROUND)
         world.add(player, Layer.PLAYER)
         world.add(enemyGenerator, Layer.UI)
@@ -167,7 +134,15 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             return
         }
 
-        if (stageEndHandled) return
+        updateUiMessages(gctx)
+
+        if (stageEndHandled) {
+            stageTransitionDelay -= gctx.frameTime
+            if (stageTransitionDelay <= 0f) {
+                moveToNextSceneAfterStageEnd()
+            }
+            return
+        }
 
         stageTimeLeft -= gctx.frameTime
         elapsedTime += gctx.frameTime
@@ -420,7 +395,10 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         if (isInsideJoystickArea(x, y)) return false
 
         val cost = getCurrentTurretCost()
-        if (turretEnergy < cost) return false
+        if (turretEnergy < cost) {
+            showInstallMessage()
+            return false
+        }
 
         val installX = x.coerceIn(TURRET_RADIUS, gctx.metrics.width - TURRET_RADIUS)
         val installY = y.coerceIn(TURRET_RADIUS, gctx.metrics.height - TURRET_RADIUS)
@@ -638,11 +616,60 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     }
 
     private fun endStage(success: Boolean) {
+        if (stageEndHandled) return
+
         stageEndHandled = true
+        pendingStageEndSuccess = success
+        stageTransitionDelay = 1.15f
+
+        finishTurretDrag()
+        touchMode = TouchMode.NONE
+        turretPointerId = INVALID_POINTER_ID
 
         val stage = StageManager.currentStage
 
-        if (!success) {
+        if (success) {
+            showStageMessage(
+                if (stage.isBossStage) "MISSION CLEAR" else "STAGE CLEAR",
+                if (stage.isBossStage) "Final Coin ${GameStats.gold}" else "Stage Coin ${GameStats.stageGold}",
+                stageTransitionDelay
+            )
+        } else {
+            showStageMessage(
+                "GAME OVER",
+                "Stage Coin ${GameStats.stageGold}",
+                stageTransitionDelay
+            )
+        }
+    }
+
+    private fun updateUiMessages(gctx: GameContext) {
+        if (stageMessageTime > 0f) {
+            stageMessageTime -= gctx.frameTime
+            if (stageMessageTime < 0f) stageMessageTime = 0f
+        }
+
+        if (installMessageTime > 0f) {
+            installMessageTime -= gctx.frameTime
+            if (installMessageTime < 0f) installMessageTime = 0f
+        }
+    }
+
+    private fun showStageMessage(title: String, subTitle: String, duration: Float) {
+        stageMessageText = title
+        stageMessageSubText = subTitle
+        stageMessageTime = duration
+    }
+
+    private fun showInstallMessage() {
+        installMessageText = "NO ENERGY"
+        installMessageTime = 0.75f
+    }
+
+    private fun moveToNextSceneAfterStageEnd() {
+        val stage = StageManager.currentStage
+
+        if (!pendingStageEndSuccess) {
             gctx.sceneStack.change(ResultScene(gctx, false))
             return
         }
@@ -716,6 +743,44 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             isAntiAlias = true
         }
 
+        private val centerPanelPaint = Paint().apply {
+            color = Color.argb(165, 0, 0, 0)
+            isAntiAlias = true
+        }
+
+        private val centerStrokePaint = Paint().apply {
+            color = Color.argb(170, 130, 220, 255)
+            style = Paint.Style.STROKE
+            strokeWidth = 3f
+            isAntiAlias = true
+        }
+
+        private val stageTitlePaint = Paint().apply {
+            color = Color.WHITE
+            textSize = 52f
+            textAlign = Paint.Align.CENTER
+            isAntiAlias = true
+        }
+
+        private val stageSubPaint = Paint().apply {
+            color = Color.argb(235, 210, 235, 255)
+            textSize = 25f
+            textAlign = Paint.Align.CENTER
+            isAntiAlias = true
+        }
+
+        private val installToastPaint = Paint().apply {
+            color = Color.argb(185, 0, 0, 0)
+            isAntiAlias = true
+        }
+
+        private val installTextPaint = Paint().apply {
+            color = Color.rgb(255, 105, 105)
+            textSize = 26f
+            textAlign = Paint.Align.CENTER
+            isAntiAlias = true
+        }
+
         init {
             hpIcon.setSize(30f, 30f)
             energyIcon.setSize(30f, 30f)
@@ -729,6 +794,34 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         }
 
         override fun update(gctx: GameContext) {
+        }
+
+        private fun drawStageMessage(canvas: Canvas) {
+            if (stageMessageTime <= 0f) return
+
+            val centerX = gctx.metrics.width / 2f
+            val top = HUD_HEIGHT + 38f
+            val panel = RectF(centerX - 360f, top, centerX + 360f, top + 120f)
+
+            canvas.drawRoundRect(panel, 28f, 28f, centerPanelPaint)
+            canvas.drawRoundRect(panel, 28f, 28f, centerStrokePaint)
+
+            canvas.drawText(stageMessageText, centerX, top + 55f, stageTitlePaint)
+
+            if (stageMessageSubText.isNotEmpty()) {
+                canvas.drawText(stageMessageSubText, centerX, top + 92f, stageSubPaint)
+            }
+        }
+
+        private fun drawInstallMessage(canvas: Canvas) {
+            if (installMessageTime <= 0f) return
+
+            val centerX = gctx.metrics.width / 2f
+            val top = HUD_HEIGHT + 175f
+            val panel = RectF(centerX - 145f, top, centerX + 145f, top + 54f)
+
+            canvas.drawRoundRect(panel, 22f, 22f, installToastPaint)
+            canvas.drawText(installMessageText, centerX, top + 36f, installTextPaint)
         }
 
         override fun draw(canvas: Canvas) {
@@ -772,6 +865,9 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             pauseIcon.draw(canvas)
 
             drawJoystick(canvas)
+
+            drawStageMessage(canvas)
+            drawInstallMessage(canvas)
         }
 
         private fun drawHudPanel(canvas: Canvas) {

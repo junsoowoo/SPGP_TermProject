@@ -35,15 +35,21 @@ class PlayerShip(
     private var movePower = 0f
 
     private var fireTimer = 0f
+    private var hitFlashTime = 0f
 
     private val sprite = Sprite(gctx, R.drawable.player_ship)
 
     init {
-        sprite.setSize(130f, 100f)
+        sprite.setSize(120f, 88f)
         sprite.setCenter(x, y)
     }
 
     override fun update(gctx: GameContext) {
+        if (hitFlashTime > 0f) {
+            hitFlashTime -= gctx.frameTime
+            if (hitFlashTime < 0f) hitFlashTime = 0f
+        }
+
         if (isDead) return
 
         fireTimer += gctx.frameTime
@@ -53,15 +59,19 @@ class PlayerShip(
 
         x = x.coerceIn(radius, gctx.metrics.width - radius)
         y = y.coerceIn(radius, gctx.metrics.height - radius)
+
+        sprite.setCenter(x, y)
     }
 
     override fun draw(canvas: Canvas) {
+        if (hitFlashTime > 0f && ((hitFlashTime * 24f).toInt() % 2 == 0)) return
+
         sprite.setCenter(x, y)
         sprite.draw(canvas)
     }
 
     fun setMoveInput(dirX: Float, dirY: Float, power: Float) {
-        val length = sqrt(dirX * dirX + dirY * dirY)
+        val length = sqrt(dirX * dirX + dyFix(dirY))
 
         if (length <= 0.001f || power <= 0f) {
             moveDirX = 0f
@@ -87,6 +97,7 @@ class PlayerShip(
         if (isDead) return
 
         hp -= damage
+        hitFlashTime = HIT_FLASH_DURATION
 
         if (hp <= 0) {
             hp = 0
@@ -98,5 +109,13 @@ class PlayerShip(
         if (isDead) return
 
         hp = (hp + amount).coerceAtMost(maxHp)
+    }
+
+    private fun dyFix(dirY: Float): Float {
+        return dirY * dirY
+    }
+
+    companion object {
+        private const val HIT_FLASH_DURATION = 0.35f
     }
 }
