@@ -21,10 +21,10 @@ object GameStats {
         get() = 4 + (playerDamageLevel - 1) * 2
 
     val playerMaxHp: Int
-        get() = 100 + (playerMaxHpLevel - 1) * 25
+        get() = 135 + (playerMaxHpLevel - 1) * 35
 
     val playerCoinBonus: Int
-        get() = (playerCoinGainLevel - 1) * 2
+        get() = (playerCoinGainLevel - 1) * 3
 
     val playerMoveSpeed: Float
         get() = 1100f + (playerMoveSpeedLevel - 1) * 90f
@@ -36,36 +36,36 @@ object GameStats {
         get() = (turretRangeLevel - 1) * 25f
 
     val turretInstallCostRate: Float
-        get() = (1.0f - (turretCostLevel - 1) * 0.07f).coerceAtLeast(0.55f)
+        get() = (1.0f - (turretCostLevel - 1) * 0.08f).coerceAtLeast(0.50f)
 
     val turretHpBonus: Int
-        get() = (turretHpLevel - 1) * 25
+        get() = (turretHpLevel - 1) * 35
 
     val turretDamageBonus: Int
         get() = (turretDamageLevel - 1) * 12
 
     fun getBasicTurretDamage(): Int {
-        return 70 + turretDamageBonus
+        return 72 + turretDamageBonus
     }
 
     fun getRapidTurretDamage(): Int {
-        return 16 + turretDamageBonus / 2
+        return 17 + turretDamageBonus / 2
     }
 
     fun getBasicTurretHp(): Int {
-        return 90 + turretHpBonus
+        return 125 + turretHpBonus
     }
 
     fun getRapidTurretHp(): Int {
-        return 60 + turretHpBonus
+        return 85 + turretHpBonus
     }
 
     fun getBasicTurretRange(): Float {
-        return 280f + turretRangeBonus
+        return 290f + turretRangeBonus
     }
 
     fun getRapidTurretRange(): Float {
-        return 230f + turretRangeBonus
+        return 240f + turretRangeBonus
     }
 
     fun getCoinValue(baseValue: Int): Int {
@@ -83,16 +83,16 @@ object GameStats {
 
     fun getUpgradeCost(type: UpgradeType): Int {
         return when (type) {
-            UpgradeType.PLAYER_DAMAGE -> playerDamageLevel * 90
-            UpgradeType.PLAYER_MAX_HP -> playerMaxHpLevel * 110
-            UpgradeType.PLAYER_COIN_GAIN -> playerCoinGainLevel * 130
-            UpgradeType.PLAYER_MOVE_SPEED -> playerMoveSpeedLevel * 100
-            UpgradeType.PLAYER_FIRE_RATE -> playerFireRateLevel * 140
+            UpgradeType.PLAYER_DAMAGE -> playerDamageLevel * 65
+            UpgradeType.PLAYER_MAX_HP -> playerMaxHpLevel * 70
+            UpgradeType.PLAYER_COIN_GAIN -> playerCoinGainLevel * 85
+            UpgradeType.PLAYER_MOVE_SPEED -> playerMoveSpeedLevel * 75
+            UpgradeType.PLAYER_FIRE_RATE -> playerFireRateLevel * 95
 
-            UpgradeType.TURRET_RANGE -> turretRangeLevel * 120
-            UpgradeType.TURRET_COST -> turretCostLevel * 150
-            UpgradeType.TURRET_HP -> turretHpLevel * 100
-            UpgradeType.TURRET_DAMAGE -> turretDamageLevel * 130
+            UpgradeType.TURRET_RANGE -> turretRangeLevel * 80
+            UpgradeType.TURRET_COST -> turretCostLevel * 95
+            UpgradeType.TURRET_HP -> turretHpLevel * 70
+            UpgradeType.TURRET_DAMAGE -> turretDamageLevel * 90
         }
     }
 

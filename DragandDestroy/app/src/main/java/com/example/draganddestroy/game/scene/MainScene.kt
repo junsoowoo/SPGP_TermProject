@@ -802,21 +802,21 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
         private const val HUD_HEIGHT = 84f
 
-        private const val MAX_TURRET_ENERGY = 500f
-        private const val BASE_TURRET_COST = 85f
+        private const val MAX_TURRET_ENERGY = 560f
+        private const val BASE_TURRET_COST = 75f
         private const val TURRET_SPACING = 60f
         private const val TURRET_RADIUS = 20f
-        private const val TURRET_ENERGY_RECOVER_PER_SEC = 35f
+        private const val TURRET_ENERGY_RECOVER_PER_SEC = 45f
 
         private const val MID_STAGE_SHOP_INTERVAL = 20f
 
-        private const val LARGE_COIN_DROP_RATE = 20
-        private const val MAGNET_DROP_RATE = 7
-        private const val HEAL_DROP_RATE = 10
+        private const val LARGE_COIN_DROP_RATE = 25
+        private const val MAGNET_DROP_RATE = 9
+        private const val HEAL_DROP_RATE = 13
 
         private const val MAGNET_DURATION = 7f
         private const val MAGNET_RANGE = 900f
-        private const val HEAL_AMOUNT = 35
+        private const val HEAL_AMOUNT = 45
 
         private const val COIN_PICKUP_RANGE_BONUS = 10f
 

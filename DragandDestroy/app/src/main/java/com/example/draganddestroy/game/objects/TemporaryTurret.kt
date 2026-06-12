@@ -30,7 +30,7 @@ class TemporaryTurret(
     val attackRange = if (type == TurretType.BASIC) GameStats.getBasicTurretRange() else GameStats.getRapidTurretRange()
 
     private var hp = if (type == TurretType.BASIC) GameStats.getBasicTurretHp() else GameStats.getRapidTurretHp()
-    private var lifeTime = if (type == TurretType.BASIC) 4.0f else 3.2f
+    private var lifeTime = if (type == TurretType.BASIC) 4.7f else 3.9f
     private var fireTimer = 0f
 
     private val fireInterval = if (type == TurretType.BASIC) 1.05f else 0.22f
