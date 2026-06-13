@@ -124,8 +124,6 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     }
 
     override fun update(gctx: GameContext) {
-        super.update(gctx)
-
         DebugCommand.consumeStageRequest()?.let {
             StageManager.setStageNumber(it)
             gctx.sceneStack.change(MainScene(gctx))
@@ -166,7 +164,9 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             turretEnergy = (turretEnergy + TURRET_ENERGY_RECOVER_PER_SEC * gctx.frameTime).coerceAtMost(MAX_TURRET_ENERGY)
         }
 
-        player.setMoveInput(joystickDirX, joystickDirY, joystickPower)
+        applyMovementInput()
+
+        super.update(gctx)
 
         player.tryFire()?.let {
             world.add(it, Layer.BULLET)
@@ -305,7 +305,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         val clampedDistance = distance.coerceAtMost(JOYSTICK_MAX_DISTANCE)
         joystickDirX = dx / distance
         joystickDirY = dy / distance
-        joystickPower = (clampedDistance / JOYSTICK_MAX_DISTANCE).coerceIn(0f, 1f)
+        joystickPower = 1f
 
         joystickThumbX = centerX + joystickDirX * clampedDistance
         joystickThumbY = centerY + joystickDirY * clampedDistance
@@ -319,6 +319,21 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         joystickThumbX = getJoystickCenterX()
         joystickThumbY = getJoystickCenterY()
         player.setMoveInput(0f, 0f, 0f)
+    }
+
+    private fun applyMovementInput() {
+        if (joystickPointerId == INVALID_POINTER_ID) {
+            joystickActive = false
+            joystickDirX = 0f
+            joystickDirY = 0f
+            joystickPower = 0f
+            joystickThumbX = getJoystickCenterX()
+            joystickThumbY = getJoystickCenterY()
+            player.setMoveInput(0f, 0f, 0f)
+            return
+        }
+
+        player.setMoveInput(joystickDirX, joystickDirY, joystickPower)
     }
 
     private fun isInsideJoystickArea(x: Float, y: Float): Boolean {

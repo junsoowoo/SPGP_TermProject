@@ -2,15 +2,16 @@ package com.example.draganddestroy
 
 import android.view.KeyEvent
 import com.example.draganddestroy.game.data.DebugCommand
-import com.example.draganddestroy.game.scene.TitleScene
+import com.example.draganddestroy.game.scene.StageSelectScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.activity.BaseGameActivity
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
+import com.example.draganddestroy.game.scene.TitleScene
 
 class DragAndDestroyActivity : BaseGameActivity() {
 
-    override val drawsDebugGrid: Boolean = false
-    override val drawsDebugInfo: Boolean = false
+    override val drawsDebugGrid: Boolean = true
+    override val drawsDebugInfo: Boolean = true
     override val drawsFpsGraph: Boolean = false
 
     override fun createRootScene(gctx: GameContext): Scene {
@@ -19,7 +20,7 @@ class DragAndDestroyActivity : BaseGameActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action == KeyEvent.ACTION_DOWN) {
+        if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
             when (event.keyCode) {
                 KeyEvent.KEYCODE_1 -> {
                     DebugCommand.requestStage(1)
@@ -54,5 +55,9 @@ class DragAndDestroyActivity : BaseGameActivity() {
         }
 
         return super.dispatchKeyEvent(event)
+    }
+
+    override fun onPause() {
+        super.onPause()
     }
 }
