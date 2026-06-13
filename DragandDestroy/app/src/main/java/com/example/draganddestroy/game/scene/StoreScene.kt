@@ -38,16 +38,12 @@ class StoreScene(
     private val summaryPanel = RectF(495f, 610f, 1105f, 662f)
 
     private val buttons = listOf(
-        UpgradeButton(RectF(255f, 245f, 735f, 295f), "Player Damage", UpgradeType.PLAYER_DAMAGE),
-        UpgradeButton(RectF(255f, 305f, 735f, 355f), "Player Max HP", UpgradeType.PLAYER_MAX_HP),
-        UpgradeButton(RectF(255f, 365f, 735f, 415f), "Coin Gain", UpgradeType.PLAYER_COIN_GAIN),
-        UpgradeButton(RectF(255f, 425f, 735f, 475f), "Move Speed", UpgradeType.PLAYER_MOVE_SPEED),
-        UpgradeButton(RectF(255f, 485f, 735f, 535f), "Fire Rate", UpgradeType.PLAYER_FIRE_RATE),
+        UpgradeButton(RectF(255f, 265f, 735f, 340f), "Player Damage", UpgradeType.PLAYER_DAMAGE),
+        UpgradeButton(RectF(255f, 375f, 735f, 450f), "Player Max HP", UpgradeType.PLAYER_MAX_HP),
+        UpgradeButton(RectF(255f, 485f, 735f, 560f), "Fire Rate", UpgradeType.PLAYER_FIRE_RATE),
 
-        UpgradeButton(RectF(865f, 245f, 1345f, 295f), "Turret Range", UpgradeType.TURRET_RANGE),
-        UpgradeButton(RectF(865f, 305f, 1345f, 355f), "Turret Cost Down", UpgradeType.TURRET_COST),
-        UpgradeButton(RectF(865f, 365f, 1345f, 415f), "Turret HP", UpgradeType.TURRET_HP),
-        UpgradeButton(RectF(865f, 425f, 1345f, 475f), "Turret Damage", UpgradeType.TURRET_DAMAGE),
+        UpgradeButton(RectF(865f, 315f, 1345f, 390f), "Turret Cost Down", UpgradeType.TURRET_COST),
+        UpgradeButton(RectF(865f, 455f, 1345f, 530f), "Turret Damage", UpgradeType.TURRET_DAMAGE),
     )
 
     private val stageSelectButton = RectF(525f, 675f, 745f, 750f)
@@ -136,37 +132,38 @@ class StoreScene(
             canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, dimPaint)
         } else {
             drawBackground(canvas)
-            canvas.drawRect(0f, 0f, gctx.metrics.width, gctx.metrics.height, dimPaint)
         }
 
-        canvas.drawRoundRect(rootPanel, 28f, 28f, rootPanelPaint)
+        canvas.drawRoundRect(rootPanel, 30f, 30f, rootPanelPaint)
+        canvas.drawRoundRect(rootPanel, 30f, 30f, panelStrokePaint)
+
+        bannerSprite.setCenterProportionalWidth(gctx.metrics.width / 2f, 160f, 330f)
         bannerSprite.draw(canvas)
 
         canvas.drawRoundRect(playerPanel, 24f, 24f, sectionPanelPaint)
         canvas.drawRoundRect(playerPanel, 24f, 24f, panelStrokePaint)
-
         canvas.drawRoundRect(turretPanel, 24f, 24f, sectionPanelPaint)
         canvas.drawRoundRect(turretPanel, 24f, 24f, panelStrokePaint)
 
-        canvas.drawRoundRect(summaryPanel, 18f, 18f, sectionPanelPaint)
-        canvas.drawRoundRect(summaryPanel, 18f, 18f, panelStrokePaint)
-
-        canvas.drawText("PLAYER UPGRADES", playerPanel.left + 20f, playerPanel.top + 34f, sectionTitlePaint)
-        canvas.drawText("TURRET UPGRADES", turretPanel.left + 20f, turretPanel.top + 34f, sectionTitlePaint)
+        canvas.drawText("Player Upgrade", playerPanel.left + 28f, playerPanel.top + 42f, sectionTitlePaint)
+        canvas.drawText("Turret Upgrade", turretPanel.left + 28f, turretPanel.top + 42f, sectionTitlePaint)
 
         for (button in buttons) {
             drawUpgradeButton(canvas, button)
         }
 
-        val summaryText = if (inStageShop) {
-            "Coin ${GameStats.gold}    Stage Coin ${GameStats.stageGold}    Auto return ${((AUTO_CLOSE_TIME - autoCloseTimer).coerceAtLeast(0f)).toInt() + 1}"
-        } else {
-            "Coin ${GameStats.gold}    Stage Coin ${GameStats.stageGold}"
-        }
-        canvas.drawText(summaryText, summaryPanel.centerX(), summaryPanel.centerY() + 8f, centerTextPaint)
+        canvas.drawRoundRect(summaryPanel, 18f, 18f, sectionPanelPaint)
+        canvas.drawText("Coin ${GameStats.gold}    Stage Coin ${GameStats.stageGold}", summaryPanel.centerX(), summaryPanel.centerY() + 9f, centerTextPaint)
 
+        stageSelectSprite.setCenterProportionalWidth(stageSelectButton.centerX(), stageSelectButton.centerY(), 165f)
         stageSelectSprite.draw(canvas)
+
+        nextSprite.setCenterProportionalWidth(nextButton.centerX(), nextButton.centerY(), 165f)
         nextSprite.draw(canvas)
+
+        if (inStageShop) {
+            canvas.drawText("Auto return in ${(AUTO_CLOSE_TIME - autoCloseTimer).coerceAtLeast(0f).toInt() + 1}", gctx.metrics.width / 2f, 720f, centerTextPaint)
+        }
     }
 
     private fun drawBackground(canvas: Canvas) {
@@ -180,7 +177,6 @@ class StoreScene(
         nearBg.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
         nearBg.draw(canvas)
     }
-
     private fun drawUpgradeButton(canvas: Canvas, button: UpgradeButton) {
         val level = GameStats.getUpgradeLevel(button.type)
         val cost = GameStats.getUpgradeCost(button.type)

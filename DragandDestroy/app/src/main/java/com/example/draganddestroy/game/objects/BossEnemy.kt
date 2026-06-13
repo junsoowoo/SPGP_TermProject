@@ -138,18 +138,16 @@ class BossEnemy(
     }
 
     override fun draw(canvas: Canvas) {
-        val hpBarLeft = 420f
-        val hpBarRight = 1500f
-        val hpBarY = 55f
+        val hpBarLeft = 460f
+        val hpBarRight = 1420f
+        val hpBarY = 110f
 
         canvas.drawLine(hpBarLeft, hpBarY, hpBarRight, hpBarY, hpBgPaint)
         canvas.drawLine(hpBarLeft, hpBarY, hpBarLeft + (hpBarRight - hpBarLeft) * hpRatio.coerceIn(0f, 1f), hpBarY, hpPaint)
 
-        bossSprite.setCenter(x, y)
-        bossSprite.draw(canvas)
+        super.draw(canvas)
 
-        canvas.drawText("BOSS", x, y + radius + 18f, bossTextPaint)
-        canvas.drawText("PHASE $phase", x, y + radius + 52f, phaseTextPaint)
+        canvas.drawText("PHASE $phase", x, y + radius + 42f, phaseTextPaint)
     }
 
     override fun tryFireAt(targetX: Float, targetY: Float): EnemyBullet? {
