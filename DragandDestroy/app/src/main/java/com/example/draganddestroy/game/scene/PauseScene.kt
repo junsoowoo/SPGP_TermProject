@@ -9,6 +9,7 @@ import com.example.draganddestroy.R
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
+import com.example.draganddestroy.game.util.GameSound
 
 class PauseScene(gctx: GameContext) : Scene(gctx) {
 
@@ -77,15 +78,18 @@ class PauseScene(gctx: GameContext) : Scene(gctx) {
 
         when {
             resumeButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
                 gctx.sceneStack.pop()
             }
 
             selectButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
                 gctx.sceneStack.popAll(finishesActivity = false)
                 gctx.sceneStack.push(StageSelectScene(gctx))
             }
 
             exitButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
                 gctx.sceneStack.popAll()
             }
         }

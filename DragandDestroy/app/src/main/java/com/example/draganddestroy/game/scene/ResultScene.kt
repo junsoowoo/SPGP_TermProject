@@ -12,7 +12,6 @@ import com.example.draganddestroy.game.util.GameSound
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
-
 class ResultScene(
     gctx: GameContext,
     private val success: Boolean,
@@ -102,6 +101,7 @@ class ResultScene(
         val point = gctx.metrics.fromScreen(event.x, event.y)
 
         if (retryButton.contains(point.x, point.y)) {
+            GameSound.playButtonClick(gctx)
             GameStats.resetAll()
             StageManager.reset()
             gctx.sceneStack.change(StageSelectScene(gctx))

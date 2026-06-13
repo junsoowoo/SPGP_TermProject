@@ -198,6 +198,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                 val y = point.y
 
                 if (pauseButton.contains(x, y)) {
+                    GameSound.playButtonClick(gctx)
                     gctx.sceneStack.push(PauseScene(gctx))
                     return true
                 }
@@ -558,8 +559,15 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                 pickup.isDead = true
 
                 when (pickup.type) {
-                    PickupType.MAGNET -> magnetTime = MAGNET_DURATION
-                    PickupType.HEAL -> player.heal(HEAL_AMOUNT)
+                    PickupType.MAGNET -> {
+                        magnetTime = MAGNET_DURATION
+                        GameSound.playPickupMagnet(gctx)
+                    }
+
+                    PickupType.HEAL -> {
+                        player.heal(HEAL_AMOUNT)
+                        GameSound.playPickupHeal(gctx)
+                    }
                 }
 
                 world.remove(pickup, Layer.PICKUP)

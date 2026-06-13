@@ -10,7 +10,6 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.sin
 import com.example.draganddestroy.game.util.GameSound
-
 class TitleScene(gctx: GameContext) : Scene(gctx) {
 
     private val farBg = Sprite(gctx, R.drawable.bg_space_far)
@@ -65,6 +64,7 @@ class TitleScene(gctx: GameContext) : Scene(gctx) {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            GameSound.playButtonClick(gctx)
             gctx.sceneStack.change(StageSelectScene(gctx))
         }
 

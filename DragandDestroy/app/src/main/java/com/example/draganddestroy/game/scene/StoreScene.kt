@@ -12,6 +12,7 @@ import com.example.draganddestroy.game.data.UpgradeType
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
+import com.example.draganddestroy.game.util.GameSound
 
 class StoreScene(
     gctx: GameContext,
@@ -50,6 +51,10 @@ class StoreScene(
     private val nextButton = RectF(855f, 675f, 1075f, 750f)
 
     private var autoCloseTimer = 0f
+
+    private var messageText = ""
+    private var messageTime = 0f
+    private var messageSuccess = true
 
     private val dimPaint = Paint().apply {
         color = Color.argb(115, 0, 0, 0)
@@ -112,6 +117,20 @@ class StoreScene(
         isAntiAlias = true
     }
 
+    private val successTextPaint = Paint().apply {
+        color = Color.rgb(120, 255, 170)
+        textSize = 27f
+        textAlign = Paint.Align.CENTER
+        isAntiAlias = true
+    }
+
+    private val failTextPaint = Paint().apply {
+        color = Color.rgb(255, 110, 110)
+        textSize = 27f
+        textAlign = Paint.Align.CENTER
+        isAntiAlias = true
+    }
+
     init {
         bannerSprite.setCenterProportionalWidth(gctx.metrics.width / 2f, 72f, 330f)
         nextSprite.setCenterProportionalWidth(nextButton.centerX(), nextButton.centerY(), 165f)
@@ -119,6 +138,11 @@ class StoreScene(
     }
 
     override fun update(gctx: GameContext) {
+        if (messageTime > 0f) {
+            messageTime -= gctx.frameTime
+            if (messageTime < 0f) messageTime = 0f
+        }
+
         if (!inStageShop) return
 
         autoCloseTimer += gctx.frameTime
@@ -154,6 +178,10 @@ class StoreScene(
 
         canvas.drawRoundRect(summaryPanel, 18f, 18f, sectionPanelPaint)
         canvas.drawText("Coin ${GameStats.gold}    Stage Coin ${GameStats.stageGold}", summaryPanel.centerX(), summaryPanel.centerY() + 9f, centerTextPaint)
+
+        if (messageTime > 0f) {
+            canvas.drawText(messageText, gctx.metrics.width / 2f, 595f, if (messageSuccess) successTextPaint else failTextPaint)
+        }
 
         stageSelectSprite.setCenterProportionalWidth(stageSelectButton.centerX(), stageSelectButton.centerY(), 165f)
         stageSelectSprite.draw(canvas)
@@ -198,10 +226,19 @@ class StoreScene(
 
         for (button in buttons) {
             if (button.rect.contains(x, y)) {
-                GameStats.upgrade(button.type)
+                GameSound.playButtonClick(gctx)
 
-                if (inStageShop) {
-                    gctx.sceneStack.pop()
+                val upgraded = GameStats.upgrade(button.type)
+                if (upgraded) {
+                    showStoreMessage("${button.title} Upgrade Success", true)
+                    GameSound.playUpgradeSuccess(gctx)
+
+                    if (inStageShop) {
+                        gctx.sceneStack.pop()
+                    }
+                } else {
+                    showStoreMessage("Not Enough Coin", false)
+                    GameSound.playUpgradeFail(gctx)
                 }
 
                 return true
@@ -209,11 +246,14 @@ class StoreScene(
         }
 
         if (stageSelectButton.contains(x, y)) {
+            GameSound.playButtonClick(gctx)
             goToStageSelect()
             return true
         }
 
         if (nextButton.contains(x, y)) {
+            GameSound.playButtonClick(gctx)
+
             if (inStageShop) {
                 gctx.sceneStack.pop()
             } else {
@@ -224,6 +264,12 @@ class StoreScene(
         }
 
         return true
+    }
+
+    private fun showStoreMessage(text: String, success: Boolean) {
+        messageText = text
+        messageSuccess = success
+        messageTime = 1.0f
     }
 
     private fun goToStageSelect() {

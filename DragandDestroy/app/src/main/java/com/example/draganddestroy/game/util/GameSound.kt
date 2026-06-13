@@ -14,22 +14,17 @@ object GameSound {
     private var lastEnemyHitTime = 0L
     private var lastCoinTime = 0L
     private var lastNoEnergyTime = 0L
+    private var lastButtonTime = 0L
+    private var lastPickupTime = 0L
 
     fun startBgm(gctx: GameContext) {
         if (bgmStarted) return
-
-        bgmStarted = true
-        gctx.res.sound.playMusic(R.raw.bgm_space_loop)
-    }
-
-    fun restartBgm(gctx: GameContext) {
         bgmStarted = true
         gctx.res.sound.playMusic(R.raw.bgm_space_loop)
     }
 
     fun stopBgm(gctx: GameContext) {
         if (!bgmStarted) return
-
         bgmStarted = false
         gctx.res.sound.stopMusic()
     }
@@ -76,6 +71,29 @@ object GameSound {
         gctx.res.sound.playEffect(R.raw.sfx_stage_clear)
     }
 
+    fun playButtonClick(gctx: GameContext) {
+        if (!canPlayButton()) return
+        gctx.res.sound.playEffect(R.raw.sfx_button_click)
+    }
+
+    fun playUpgradeSuccess(gctx: GameContext) {
+        gctx.res.sound.playEffect(R.raw.sfx_upgrade_success)
+    }
+
+    fun playUpgradeFail(gctx: GameContext) {
+        gctx.res.sound.playEffect(R.raw.sfx_upgrade_fail)
+    }
+
+    fun playPickupMagnet(gctx: GameContext) {
+        if (!canPlayPickup()) return
+        gctx.res.sound.playEffect(R.raw.sfx_pickup_magnet)
+    }
+
+    fun playPickupHeal(gctx: GameContext) {
+        if (!canPlayPickup()) return
+        gctx.res.sound.playEffect(R.raw.sfx_pickup_heal)
+    }
+
     private fun canPlayPlayerShot(): Boolean {
         val now = SystemClock.elapsedRealtime()
         if (now - lastPlayerShotTime < 45L) return false
@@ -115,6 +133,20 @@ object GameSound {
         val now = SystemClock.elapsedRealtime()
         if (now - lastNoEnergyTime < 180L) return false
         lastNoEnergyTime = now
+        return true
+    }
+
+    private fun canPlayButton(): Boolean {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastButtonTime < 70L) return false
+        lastButtonTime = now
+        return true
+    }
+
+    private fun canPlayPickup(): Boolean {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastPickupTime < 65L) return false
+        lastPickupTime = now
         return true
     }
 }

@@ -225,17 +225,50 @@ class StageSelectScene(gctx: GameContext) : Scene(gctx) {
         val y = point.y
 
         when {
-            basicTurretButton.contains(x, y) -> GameStats.selectedTurretType = TurretType.BASIC
-            rapidTurretButton.contains(x, y) -> GameStats.selectedTurretType = TurretType.RAPID
+            basicTurretButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                GameStats.selectedTurretType = TurretType.BASIC
+            }
 
-            stage1Button.contains(x, y) -> selectedStageNumber = 1
-            stage2Button.contains(x, y) -> selectedStageNumber = 2
-            stage3Button.contains(x, y) -> selectedStageNumber = 3
-            stage4Button.contains(x, y) -> selectedStageNumber = 4
-            bossButton.contains(x, y) -> selectedStageNumber = 5
+            rapidTurretButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                GameStats.selectedTurretType = TurretType.RAPID
+            }
 
-            storeButton.contains(x, y) -> gctx.sceneStack.change(StoreScene(gctx))
-            nextButton.contains(x, y) -> startSelectedStage()
+            stage1Button.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                selectedStageNumber = 1
+            }
+
+            stage2Button.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                selectedStageNumber = 2
+            }
+
+            stage3Button.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                selectedStageNumber = 3
+            }
+
+            stage4Button.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                selectedStageNumber = 4
+            }
+
+            bossButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                selectedStageNumber = 5
+            }
+
+            storeButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                gctx.sceneStack.change(StoreScene(gctx))
+            }
+
+            nextButton.contains(x, y) -> {
+                GameSound.playButtonClick(gctx)
+                startSelectedStage()
+            }
         }
 
         return true
