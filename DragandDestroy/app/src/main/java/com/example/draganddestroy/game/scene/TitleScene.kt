@@ -9,6 +9,7 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import kotlin.math.sin
+import com.example.draganddestroy.game.util.GameSound
 
 class TitleScene(gctx: GameContext) : Scene(gctx) {
 
@@ -40,6 +41,10 @@ class TitleScene(gctx: GameContext) : Scene(gctx) {
         nearBg.setCenter(gctx.metrics.width / 2f, gctx.metrics.height / 2f)
 
         logoSprite.setCenterProportionalWidth(gctx.metrics.width / 2f, 275f, 520f)
+    }
+
+    override fun onEnter() {
+        GameSound.startBgm(gctx)
     }
 
     override fun update(gctx: GameContext) {

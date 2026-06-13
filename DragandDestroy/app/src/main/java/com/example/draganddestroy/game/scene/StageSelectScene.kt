@@ -13,6 +13,7 @@ import com.example.draganddestroy.game.data.TurretType
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
+import com.example.draganddestroy.game.util.GameSound
 
 class StageSelectScene(gctx: GameContext) : Scene(gctx) {
 
@@ -125,6 +126,10 @@ class StageSelectScene(gctx: GameContext) : Scene(gctx) {
     init {
         logoSprite.setCenterProportionalWidth(gctx.metrics.width / 2f, 70f, 330f)
         nextSprite.setCenterProportionalWidth(nextButton.centerX(), nextButton.centerY(), 185f)
+    }
+
+    override fun onEnter() {
+        GameSound.startBgm(gctx)
     }
 
     override fun update(gctx: GameContext) {

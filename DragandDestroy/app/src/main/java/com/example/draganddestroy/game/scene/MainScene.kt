@@ -30,9 +30,9 @@ import kotlin.random.Random
 import com.example.draganddestroy.R
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import com.example.draganddestroy.game.objects.ExplosionEffect
+import com.example.draganddestroy.game.util.GameSound
 import com.example.draganddestroy.game.objects.HitEffect
 import com.example.draganddestroy.game.objects.TurretSpawnEffect
-import com.example.draganddestroy.game.objects.HorzScreenScrollBackground
 import com.example.draganddestroy.game.objects.HorzMirrorScrollBackground
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
@@ -107,12 +107,15 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         GameStats.resetStageGold()
         resetJoystick()
 
+        GameSound.startBgm(gctx)
+
         val stage = StageManager.currentStage
         showStageMessage(
             if (stage.isBossStage) "BOSS STAGE" else "STAGE ${stage.stageNumber} START",
             stage.title,
             1.35f
         )
+        GameSound.playStageStart(gctx)
 
         world.add(BackgroundObject(), Layer.BACKGROUND)
         world.add(player, Layer.PLAYER)
@@ -450,6 +453,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                     world.add(HitEffect(gctx, bullet.x, bullet.y), Layer.EFFECT)
 
                     enemy.takeDamage(bullet.damage)
+                    GameSound.playEnemyHit(gctx)
                     bullet.isDead = true
                     world.remove(bullet, Layer.BULLET)
 
@@ -461,6 +465,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
                         }
 
                         world.add(ExplosionEffect(gctx, enemy.x, enemy.y), Layer.EFFECT)
+                        GameSound.playExplosion(gctx)
                         dropRewards(enemy.x, enemy.y, enemy.rewardGold)
                         world.remove(enemy, Layer.ENEMY)
                     }
@@ -536,6 +541,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             if (CollisionHelper.circleCollision(player.x, player.y, player.radius + COIN_PICKUP_RANGE_BONUS, coin.x, coin.y, coin.radius)) {
                 coin.isDead = true
                 GameStats.addGold(coin.value)
+                GameSound.playCoin(gctx)
                 world.remove(coin, Layer.COIN)
             }
         }
@@ -629,12 +635,14 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         val stage = StageManager.currentStage
 
         if (success) {
+            GameSound.playStageClear(gctx)
             showStageMessage(
                 if (stage.isBossStage) "MISSION CLEAR" else "STAGE CLEAR",
                 if (stage.isBossStage) "Final Coin ${GameStats.gold}" else "Stage Coin ${GameStats.stageGold}",
                 stageTransitionDelay
             )
         } else {
+            GameSound.playExplosion(gctx)
             showStageMessage(
                 "GAME OVER",
                 "Stage Coin ${GameStats.stageGold}",
@@ -664,6 +672,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     private fun showInstallMessage() {
         installMessageText = "NO ENERGY"
         installMessageTime = 0.75f
+        GameSound.playNoEnergy(gctx)
     }
 
     private fun moveToNextSceneAfterStageEnd() {

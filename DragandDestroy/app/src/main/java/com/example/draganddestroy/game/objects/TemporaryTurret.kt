@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import com.example.draganddestroy.R
+import com.example.draganddestroy.game.util.GameSound
 import com.example.draganddestroy.game.data.GameStats
 import com.example.draganddestroy.game.data.TurretType
 import com.example.draganddestroy.game.scene.MainScene
@@ -152,6 +153,12 @@ class TemporaryTurret(
         val dirY = enemy.y - y
         val damage = if (type == TurretType.BASIC) GameStats.getBasicTurretDamage() else GameStats.getRapidTurretDamage()
         val color = if (type == TurretType.BASIC) Color.MAGENTA else Color.rgb(60, 220, 255)
+
+        if (type == TurretType.BASIC) {
+            GameSound.playTurretBasic(gctx)
+        } else {
+            GameSound.playTurretRapid(gctx)
+        }
 
         world.add(Bullet(gctx = gctx, startX = x, startY = y, damage = damage, color = color, dirX = dirX, dirY = dirY, speed = bulletSpeed), MainScene.Layer.BULLET)
     }

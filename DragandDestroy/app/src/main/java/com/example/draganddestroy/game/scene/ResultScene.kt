@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import com.example.draganddestroy.R
 import com.example.draganddestroy.game.data.GameStats
 import com.example.draganddestroy.game.data.StageManager
+import com.example.draganddestroy.game.util.GameSound
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
@@ -65,6 +66,10 @@ class ResultScene(
 
         resultSprite.setCenterProportionalWidth(gctx.metrics.width / 2f, 170f, 420f)
         restartSprite.setCenterProportionalWidth(retryButton.centerX(), retryButton.centerY(), 210f)
+    }
+
+    override fun onEnter() {
+        GameSound.stopBgm(gctx)
     }
 
     override fun draw(canvas: Canvas) {

@@ -3,6 +3,7 @@ package com.example.draganddestroy.game.objects
 import android.graphics.Canvas
 import android.graphics.Color
 import com.example.draganddestroy.R
+import com.example.draganddestroy.game.util.GameSound
 import com.example.draganddestroy.game.data.GameStats
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IGameObject
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.Sprite
@@ -90,6 +91,8 @@ class PlayerShip(
         if (fireTimer < GameStats.playerFireInterval) return null
 
         fireTimer = 0f
+        GameSound.playPlayerShot(gctx)
+
         return Bullet(gctx = gctx, startX = x + 80f, startY = y, damage = GameStats.playerDamage, color = Color.YELLOW, dirX = 1f, dirY = 0f, speed = 1500f)
     }
 
