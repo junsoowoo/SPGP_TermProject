@@ -22,7 +22,7 @@ https://youtube.com/shorts/eRLkbNda7Jw?feature=share
 2차 발표 README.md 링크
 https://github.com/junsoowoo/SPGP_TermProject/commit/c8df4dd8d1cd1bc51cd994cdf13449e9b6c36d7b
 
-3차 발표 영상 링크:
+3차 발표 영상 링크: https://youtu.be/Eh6uWmiDNpk
 
 3차 발표 README.md: https://github.com/junsoowoo/SPGP_TermProject/blob/main/README.md
 
